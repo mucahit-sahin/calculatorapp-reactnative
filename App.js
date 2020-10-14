@@ -11,65 +11,70 @@ const {width, height} = Dimensions.get('window');
 
 const App = () => {
   const [number, setNumber] = useState('0');
-  const [number2, setNumber2] = useState('0');
-  const [islem, setIslem] = useState('');
+  const [memory, setMemory] = useState(null);
+  const [islem, setIslem] = useState(null);
 
   const changeNumber = (num) => {
     if (num == 'AC') {
       setNumber('0');
-      setNumber2('0');
+      setMemory(null);
+      setIslem(null);
     } else if (number != '0') setNumber(number + num);
     else setNumber(num);
   };
+
   const changeNegative = () => {
     let num = parseFloat(number) * -1;
     setNumber(num.toString());
   };
 
-  const islemSec = (islem) => {
-    setIslem(islem);
-    if (number2 == '0') {
-      setNumber2(number);
-      setNumber('0');
-    } else {
-      switch (islem) {
-        case '+':
-          setNumber((parseFloat(number2) + parseFloat(number)).toString());
-          break;
-        case '-':
-          setNumber((parseFloat(number2) - parseFloat(number)).toString());
-          break;
-        case '/':
-          setNumber((parseFloat(number2) / parseFloat(number)).toString());
-          break;
-        case '*':
-          setNumber((parseFloat(number2) * parseFloat(number)).toString());
-          break;
-        default:
-          break;
+  const yuzdeHesapla = () => {
+    setNumber((number / 100).toString());
+  };
+
+  const ondalık = () => {
+    if (number.includes('.')) return;
+
+    setNumber(number + '.');
+  };
+
+  const islemSec = (isl) => {
+    if (islem !== null) {
+      if (memory == null) {
+        setMemory(parseFloat(number));
+      } else {
+        if (islem === '+') {
+          setMemory(memory + parseFloat(number));
+        } else if (islem === '-') {
+          setMemory(memory - parseFloat(number));
+        } else if (islem === 'x') {
+          setMemory(memory * parseFloat(number));
+        } else if (islem === '/') {
+          setMemory(memory / parseFloat(number));
+        }
       }
+    } else {
+      setMemory(parseFloat(number));
     }
+    setNumber('0');
+    setIslem(isl);
   };
 
   const hesapla = () => {
-    if (islem != '') {
-      switch (islem) {
-        case '+':
-          setNumber((parseFloat(number2) + parseFloat(number)).toString());
-          break;
-        case '-':
-          setNumber((parseFloat(number2) - parseFloat(number)).toString());
-          break;
-        case '/':
-          setNumber((parseFloat(number2) / parseFloat(number)).toString());
-          break;
-        case 'x':
-          setNumber((parseFloat(number2) * parseFloat(number)).toString());
-          break;
-        default:
-          break;
-      }
+    if (!islem) return;
+
+    if (islem === '+') {
+      setNumber((memory + parseFloat(number)).toString());
+    } else if (islem === '-') {
+      setNumber((memory - parseFloat(number)).toString());
+    } else if (islem === 'x') {
+      setNumber((memory * parseFloat(number)).toString());
+    } else if (islem === '/') {
+      setNumber((memory / parseFloat(number)).toString());
     }
+    setMemory(null);
+    setIslem(null);
+    return;
   };
 
   return (
@@ -117,7 +122,7 @@ const App = () => {
             <Text style={{fontSize: 30, color: 'black'}}>+/-</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => yuzdeHesapla()}>
           <View
             style={{
               backgroundColor: 'lightgray',
@@ -349,7 +354,7 @@ const App = () => {
             <Text style={{fontSize: 30, color: 'white'}}>0</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => ondalık()}>
           <View
             style={{
               backgroundColor: '#2a2a2a',
